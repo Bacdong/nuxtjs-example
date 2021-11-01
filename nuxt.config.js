@@ -67,6 +67,7 @@ export default {
           components: {
             default: resolve(__dirname, 'pages/articles/article-list.vue'),
           },
+          name: 'articles'
         },
         {
           path: '/articles/:slug',

@@ -34,7 +34,8 @@
               :style="{
                 objectFit: 'contain',
                 objectPosition: 'center',
-                borderRadius: '4px'
+                borderRadius: '4px',
+                maxHeight: '240px'
               }"
             />
             <a-list-item-meta :description="item.brief">
@@ -62,37 +63,12 @@
 
 <script>
   const apiUrl = 'https://lavisdecor.art/api/front'
-
-  const listData = [];
-  for (let i = 0; i < 23; i++) {
-    listData.push({
-      href: 'https://www.antdv.com/',
-      title: `ant design vue part ${i}`,
-      avatar: 'https://zos.alipayobjects.com/rmsportal/ODTLcjxAfvqbxHnVXCYX.png',
-      description:
-        'Ant Design, a design language for background applications, is refined by Ant UED Team.',
-      content:
-        'We supply a series of design principles, practical patterns and high quality design resources (Sketch and Axure), to help people create their product prototypes beautifully and efficiently.',
-    });
-  }
+  const limit = 8
 
   export default {
-    // data() {
-    //   return {
-    //     listData,
-    //     pagination: {
-    //       onChange: (page: any) => {
-    //         console.log(page);
-    //       },
-    //       pageSize: 3,
-    //     },
-    //     actions: [
-    //       { type: 'star-o', text: '156' },
-    //       { type: 'like-o', text: '156' },
-    //       { type: 'message', text: '2' },
-    //     ],
-    //   };
-    // },
+    watch: {
+      '$route.query': '$fetch'
+    },
 
     data: () => ({
       articles: [],
@@ -105,18 +81,32 @@
     }),
 
     async fetch() {
-      await this.$axios.$get(`${apiUrl}/story/`)
+      const url = `${apiUrl}/story/`
+
+      await this.$axios.$get(url, { 
+        params: {
+          ...this.$route.query,
+          limit: limit
+        }
+      })
         .then((res) => {
+          console.log(`ApiResponse: `, res);
           if (!res.success) {
             this.showMessage(res.error_message)
             return
           }
 
-          console.log(res.data);
           this.articles = res.data.results
           this.pagination = {
             'pageSize': res.data.page_size,
             'total': res.data.total,
+            'current': parseInt(this.$route.query.page) ?? res.data.current_page,
+            'onChange': (page) => {
+              this.$router.push({
+                path: this.$router.path,
+                query: { page: page },
+              })
+            }
           }
         })
         .catch((e) => {
