@@ -4,7 +4,7 @@ export default {
 
   // Global page headers: https://go.nuxtjs.dev/config-head
   head: {
-    title: 'example',
+    title: 'NuxtJS Example',
     htmlAttrs: {
       lang: 'en'
     },
@@ -21,12 +21,14 @@ export default {
 
   // Global CSS: https://go.nuxtjs.dev/config-css
   css: [
-    'ant-design-vue/dist/antd.css'
+    'ant-design-vue/dist/antd.css',
+    'bootstrap-vue/dist/bootstrap-vue.css',
   ],
 
   // Plugins to run before rendering page: https://go.nuxtjs.dev/config-plugins
   plugins: [
-    '@/plugins/antd-ui'
+    '@/plugins/antd-ui',
+    '@/plugins/bootstrap',
   ],
 
   // Auto import components: https://go.nuxtjs.dev/config-components
@@ -40,9 +42,39 @@ export default {
 
   // Modules: https://go.nuxtjs.dev/config-modules
   modules: [
+    'bootstrap-vue/nuxt',
+    '@nuxtjs/axios',
   ],
 
   // Build Configuration: https://go.nuxtjs.dev/config-build
   build: {
+  },
+
+  bootstrapVue: {
+    bootstrapCSS: false,
+    icons: false,
+  },
+
+  server: {
+    port: 4200 // default: 3000
+  },
+
+  router: {
+    extendRoutes(routes, resolve) {
+      routes.push(
+        {
+          path: '/articles',
+          components: {
+            default: resolve(__dirname, 'pages/articles/article-list.vue'),
+          },
+        },
+        {
+          path: '/articles/:slug',
+          components: {
+            default: resolve(__dirname, 'pages/articles/article-detail.vue'),
+          },
+        },
+      )
+    }
   }
 }
